@@ -25,6 +25,16 @@ FileStream myStream = File.Open(filePath, FileMode.Open);
 
 var root = JsonSerializer.Deserialize<Root>(myStream);
 
-root.timelineObjects.RemoveAll(x => x.placeVisit == null);
+if (root == null)
+{
+  Console.WriteLine("Der er problemer med JSON-filen :c");
+  Environment.Exit(1);
+}
 
-Console.ReadKey();
+root.timelineObjects.RemoveAll(x => x.placeVisit == null);
+List<TimelineObject> burgerKingVisits = root.timelineObjects.ToList<TimelineObject>();
+burgerKingVisits.RemoveAll(x => x.placeVisit.location.name != "Burger King");
+
+
+
+Console.WriteLine("Done");
