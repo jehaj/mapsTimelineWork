@@ -1,15 +1,13 @@
 ﻿/* 
-  Dette program bruges til at gå igennem
-  data fra Google Tidslinje. Dataen er 
-  fået gennem Google Takeout.
+  Dette program bruges til at gå igennem data fra Google Tidslinje. 
+  Dataen er fået gennem Google Takeout.
 
-  Det kan f.eks. bruges til at se hvor
-  lang tid du har været på arbejde eller
-  i skole. I tilfældet med arbejde kan
-  man undersøge om lønnen stemmer overens.
+  Det kan f.eks. bruges til at se hvor lang tid du har været på 
+  arbejde eller i skole. I tilfældet med arbejde kan man undersøge 
+  om lønnen stemmer overens.
 
-  Dette er kun tænkte eksempler og programmet
-  udvikles udelukkende for lærings skyld.
+  Dette er kun tænkte eksempler og programmet udvikles udelukkende 
+  for lærings skyld.
 
   NJK
  */
