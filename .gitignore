@@ -416,3 +416,5 @@ obj/
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,csharp,visualstudiocode
 
 /SemanticLocationHistory
+vagter.json
+vagter.txt
