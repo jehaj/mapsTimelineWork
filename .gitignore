@@ -414,3 +414,4 @@ obj/
 !.vscode/*.code-snippets
 
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,csharp,visualstudiocode
+vagter.txt

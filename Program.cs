@@ -16,10 +16,12 @@ using System.Text.Json;
 
 Console.WriteLine("mapsTimelineWork");
 
-string filePath = @"C:\Users\nikol\Downloads\google-timeline-data\Lokationshistorik\Semantic Location History\2021\2021_DECEMBER.json";
+string filePath = @"/home/nikolaj/Documents/Google-Project/Takeout/Lokationshistorik/Semantic Location History/2021/2021_DECEMBER.json";
 string jsonString = File.ReadAllText(filePath);
 
-string basePath = @"C:\Users\nikol\Downloads\google-timeline-data\Lokationshistorik\Semantic Location History\";
+string locationName = "Burger King";
+
+string basePath = @"/home/nikolaj/Documents/Google-Project/Takeout/Lokationshistorik/Semantic Location History/";
 Dictionary<string, int> folders = new Dictionary<string, int>() {
   {"2020", 12},
   {"2021", 12},
@@ -50,7 +52,7 @@ foreach (var key in folders.Keys)
     }
 }
 
-List<TimelineObject> burgerKingVisits = new List<TimelineObject>();
+List<TimelineObject> workplaceVisits = new List<TimelineObject>();
 
 for (int i = 0; i < filePaths.Count; i++)
 {
@@ -67,10 +69,24 @@ for (int i = 0; i < filePaths.Count; i++)
 
     root.timelineObjects.RemoveAll(x => x.placeVisit == null);
     root.timelineObjects.RemoveAll(x => x.placeVisit.location.name != "Burger King");
-    burgerKingVisits.AddRange(root.timelineObjects.ToList<TimelineObject>());
+    workplaceVisits.AddRange(root.timelineObjects.ToList<TimelineObject>());
 }
 
 // Skriv vagter til tekst-fil
-// tbd
+List<string> textOutput = new List<string>();
+
+for (int i = 0; i < workplaceVisits.Count; i++)
+{
+    DateTime start = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(workplaceVisits[i].placeVisit.duration.startTimestampMs)).DateTime;
+    DateTime end = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(workplaceVisits[i].placeVisit.duration.endTimestampMs)).DateTime;
+    string output = $"{start,-10:dddd}{start: dd/MM HH.mm.ss} -> {end:HH.mm.ss}";
+    textOutput.Add(output);
+    
+}
+
+File.WriteAllLines("vagter.txt", textOutput);
+
+Console.WriteLine($"Du har været ved {locationName} {workplaceVisits.Count} gange.");
+Console.WriteLine("Check vagter.txt for mere information.");
 
 Console.WriteLine("Done");
