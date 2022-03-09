@@ -19,22 +19,22 @@ using System.Text.Json;
 Console.WriteLine("mapsTimelineWork");
 
 string filePath = @"/home/nikolaj/Documents/Google-Project/Takeout/Lokationshistorik/Semantic Location History/2021/2021_DECEMBER.json";
-string jsonString = File.ReadAllText(filePath);
+if(!File.Exists(filePath)) {
+  Console.WriteLine($"File '{filePath}' does not exist.");
+  Environment.Exit(1);
+}
 
 FileStream myStream = File.Open(filePath, FileMode.Open);
 
 var root = JsonSerializer.Deserialize<Root>(myStream);
 
-if (root == null)
-{
-  Console.WriteLine("Der er problemer med JSON-filen :c");
+if (root is null || root.timelineObjects is null) {
+  Console.WriteLine("Could not deserialize json file.");
   Environment.Exit(1);
 }
 
 root.timelineObjects.RemoveAll(x => x.placeVisit == null);
 List<TimelineObject> burgerKingVisits = root.timelineObjects.ToList<TimelineObject>();
-burgerKingVisits.RemoveAll(x => x.placeVisit.location.name != "Burger King");
+burgerKingVisits.RemoveAll(x => x.placeVisit!.location!.name != "Burger King");
 
-
-
-Console.WriteLine("Done");
+Console.WriteLine("Done!");
