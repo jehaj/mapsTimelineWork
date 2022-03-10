@@ -9,12 +9,12 @@ public class TestJson
         var placeVisit1 = new PlaceVisit
         {
             location = new Location { latitudeE7 = 1, longitudeE7 = 2, name = "bebo" },
-            duration = new Duration { startTimestampMs = "5", endTimestampMs = "10" }
+            duration = new Duration { startTimestamp = "5", endTimestamp = "10" }
         };
         var placeVisit2 = new PlaceVisit
         {
             location = new Location { latitudeE7 = 7, longitudeE7 = 0, name = "moob" },
-            duration = new Duration { startTimestampMs = "9", endTimestampMs = "101" }
+            duration = new Duration { startTimestamp = "9", endTimestamp = "101" }
         };
 
         var timelineObjects = new Root

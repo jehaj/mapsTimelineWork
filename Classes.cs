@@ -7,8 +7,8 @@ public class Location
 
 public class Duration
 {
-    public string? startTimestampMs { get; set; }
-    public string? endTimestampMs { get; set; }
+    public string? startTimestamp { get; set; }
+    public string? endTimestamp { get; set; }
 }
 
 public class PlaceVisit
