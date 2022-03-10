@@ -414,7 +414,10 @@ obj/
 !.vscode/*.code-snippets
 
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,csharp,visualstudiocode
+<<<<<<< ours
 
 /SemanticLocationHistory
 vagter.json
+=======
+>>>>>>> theirs
 vagter.txt

@@ -2,9 +2,9 @@ using System.Text.Json;
 
 public class TestJson
 {
-    static void JsonTest()
-    {
-        string outPath = @"/home/nikolaj/Documents/Google-Project/Takeout/Lokationshistorik/Semantic Location History/2021/out.json";
+  static void JsonTest()
+  {
+    string outPath = @"/home/nikolaj/Documents/Google-Project/Takeout/Lokationshistorik/Semantic Location History/2021/out.json";
 
         var placeVisit1 = new PlaceVisit
         {
@@ -17,22 +17,22 @@ public class TestJson
             duration = new Duration { startTimestamp = "9", endTimestamp = "101" }
         };
 
-        var timelineObjects = new Root
-        {
-            timelineObjects = new List<TimelineObject> {
+    var timelineObjects = new Root
+    {
+      timelineObjects = new List<TimelineObject> {
         new TimelineObject { placeVisit = placeVisit1 },
         new TimelineObject { placeVisit = placeVisit2 }
     }
-        };
+    };
 
-        JsonSerializerOptions options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
+    JsonSerializerOptions options = new JsonSerializerOptions
+    {
+      WriteIndented = true
+    };
 
-        Console.WriteLine(JsonSerializer.Serialize<Root>(timelineObjects, options));
-        File.WriteAllText(outPath, JsonSerializer.Serialize(timelineObjects, options));
-    }
+    Console.WriteLine(JsonSerializer.Serialize<Root>(timelineObjects, options));
+    File.WriteAllText(outPath, JsonSerializer.Serialize(timelineObjects, options));
+  }
 
 }
 
