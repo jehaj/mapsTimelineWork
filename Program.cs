@@ -64,7 +64,7 @@ for (int i = 0; i < burgerKingVisits.Count; i++)
   TimeSpan shiftDuration = endDate.Subtract(startDate);
   sum += shiftDuration.Hours;
 
-  string day = $"{startDate:dd dddd}";
+  string day = $"{startDate:dd/MM dddd}";
 
   string shiftString = $"{day}: {startDate:T} -> {endDate:T}";
   shifts.Add(shiftString);
