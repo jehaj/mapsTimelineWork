@@ -48,8 +48,8 @@ foreach (var folder in folders)
 {
   for (int i = 0; i < folder.Value; i++)
   {
-    string monkey = Path.Combine("SemanticLocationHistory", folder.Key, $"{folder.Key}_{months[i]}.json");
-    filePaths.Add(monkey);
+    string jsonPath = Path.Combine("SemanticLocationHistory", folder.Key, $"{folder.Key}_{months[i]}.json");
+    filePaths.Add(jsonPath);
   }
 }
 
