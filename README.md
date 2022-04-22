@@ -7,3 +7,5 @@ Jeg har webscraped data fra Quinyx, som er de vagter jeg får penge for. Program
 Rå data fra Quinyx "/home/nikolaj/Hentet/DownloadedFilesForMapsTimelineWork/files-for-timeline"
 
 Rå data fra Google "/home/nikolaj/Hentet/DownloadedFilesForMapsTimelineWork/SemanticLocationHistory"
+
+Umiddelbart er der tillid til dataen.
