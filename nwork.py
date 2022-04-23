@@ -10,3 +10,10 @@ class nVisit:
         time_between = self.end - self.start
         hours = time_between.total_seconds() / 60 / 60
         return(hours)
+
+
+class registeredVisit:
+    def __init__(self):
+        self.sum = 0
+        self.date = None
+        self.part_shifts = []
