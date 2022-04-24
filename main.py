@@ -21,7 +21,13 @@ DAY_NAMES = ["mandag", "tirsdag", "onsdag", "torsdag", "fredag",
 
 workplace_name = "Burger King"
 
-if not os.path.exists(DIRECTORY_TIMELINE):
+is_pause_paid = False
+
+# this variable catches fake visits to work (too short to count)
+minimum_hours = 1
+
+if (not os.path.exists(DIRECTORY_TIMELINE) or
+        not os.path.exists(DIRECTORY_REGISTERED)):
     sys.exit()
 
 print("Listing files holding registered data")
@@ -51,6 +57,8 @@ for file_path in file_paths_timeline:
             start = timestamps["startTimestamp"]
             end = timestamps["endTimestamp"]
             nvisit = nwork.nVisit(start, end)
+            if nvisit.duration() < 1:
+                continue
             visits_timeline.append(nvisit)
 
 print("Succesfully got data from JSON.\n"
@@ -61,7 +69,12 @@ sum = 0
 for visit in visits_timeline:
     sum += visit.duration()
 
-print("Hours spent at work {0:.2f}".format(sum))
+# Statistic analysis on shift length / average time spent at work
+# visits_duration = [x.duration() for x in visits_timeline]
+# visits_duration.sort()
+
+print("Hours spent at work {0:.2f}.".format(sum))
+print("Note that this includes pauses.")
 
 print()
 print("Finding files holding registered data...\n")
@@ -135,6 +148,26 @@ for visit in visits_registered:
     sum += visit.sum
 
 print("Hours registered at work {0:.2f}\n".format(sum))
+print("Note this does not include pauses. Only time you get paid for.")
 
+# Calculate pause time for a given day
+total_pause = 0
+for visit in visits_registered:
+    if len(visit.part_shifts) > 1:
+        pause = 0
+        for i in range(1, len(visit.part_shifts)):
+            pause += (visit.part_shifts[i][0] -
+                      visit.part_shifts[i-1][1]).total_seconds() / 60 / 60
+        total_pause += pause
+        visit.pause = pause
+
+print("You have had {:.2f} hours of pause.".format(total_pause))
+print("Shifts including unpaid pauses total to {:.2f} hours."
+      .format(sum+total_pause))
+
+print()
+print("Amount of visits to Burger King: {:>13}".format(len(visits_timeline)))
+print("Amount of registered shifts at Burger King: {}".format(
+    len(visits_registered)))
 
 print("Exiting...")

@@ -17,3 +17,4 @@ class registeredVisit:
         self.sum = 0
         self.date = None
         self.part_shifts = []
+        self.pause = 0
