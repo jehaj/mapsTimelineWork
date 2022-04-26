@@ -23,7 +23,7 @@ workplace_name = "Burger King"
 
 is_pause_paid = False
 
-# this variable catches fake visits to work (too short to count)
+# Minimum length of a visit to be counted
 minimum_hours = 1
 
 if (not os.path.exists(DIRECTORY_TIMELINE) or
@@ -57,7 +57,7 @@ for file_path in file_paths_timeline:
             start = timestamps["startTimestamp"]
             end = timestamps["endTimestamp"]
             nvisit = nwork.nVisit(start, end)
-            if nvisit.total_duration() < 1:
+            if nvisit.total_duration() < minimum_hours:
                 continue
             visits_timeline.append(nvisit)
 
@@ -148,7 +148,7 @@ for visit in visits_registered:
     total_hours_registered += visit.sum
 
 print("Hours registered at work {0:.2f}\n".format(total_hours_registered))
-print("Note this does not include pauses. Only time you get paid for.")
+print("Note this does not include pauses. Only hours clocked in.")
 
 # Calculate pause time for a given day
 total_pause = 0
@@ -166,12 +166,15 @@ print("Shifts including unpaid pauses total to {:.2f} hours."
       .format(total_hours_registered+total_pause))
 
 print()
-print("Amount of visits to Burger King: {:>13}".format(len(visits_timeline)))
-print("Amount of registered shifts at Burger King: {}".format(
+print("Amount of visits to {}: {:>13}".format(
+    workplace_name,
+    len(visits_timeline)))
+print("Amount of registered shifts at {}: {}".format(
+    workplace_name,
     len(visits_registered)))
 
 print()
-print("Finding dates that does not match")
+print("Finding dates that does not match:")
 
 total_difference = 0
 for visit in visits_timeline:
@@ -188,8 +191,8 @@ for visit in visits_timeline:
         total_difference += difference
         print("Day {} does not add up. Difference is {:.2f} hours"
               .format(str(visit.date), difference))
-        print("Timeline says {}".format(visit.to_string()))
-        print("Quinyx says {}".format(registered_shift.to_string()))
+        print("Timeline says {:>21}".format(visit.to_string()))
+        print("Quinyx says {:>26}".format(registered_shift.to_string()))
         print()
 
 print("Total difference is {:.2f} hours".format(total_difference))
