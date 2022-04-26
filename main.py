@@ -57,23 +57,23 @@ for file_path in file_paths_timeline:
             start = timestamps["startTimestamp"]
             end = timestamps["endTimestamp"]
             nvisit = nwork.nVisit(start, end)
-            if nvisit.duration() < 1:
+            if nvisit.total_duration() < 1:
                 continue
             visits_timeline.append(nvisit)
 
 print("Succesfully got data from JSON.\n"
       "Showing a bit of information gathered...\n")
 
-sum = 0
+total_hours_registered = 0
 
 for visit in visits_timeline:
-    sum += visit.duration()
+    total_hours_registered += visit.total_duration()
 
 # Statistic analysis on shift length / average time spent at work
 # visits_duration = [x.duration() for x in visits_timeline]
 # visits_duration.sort()
 
-print("Hours spent at work {0:.2f}.".format(sum))
+print("Hours spent at work {0:.2f}.".format(total_hours_registered))
 print("Note that this includes pauses.")
 
 print()
@@ -118,7 +118,7 @@ for file_path in file_paths_registered:
                     visits_registered.append(visit)
                 day, month, year = map(int, text_list[1].split('.'))
                 visit = nwork.registeredVisit()
-                visit.date = datetime.datetime(year, month, day)
+                visit.date = datetime.date(year, month, day)
                 continue
 
             if visit is not None:
@@ -142,12 +142,12 @@ for file_path in file_paths_registered:
         if visit is not None:
             visits_registered.append(visit)
 
-sum = 0
+total_hours_registered = 0
 
 for visit in visits_registered:
-    sum += visit.sum
+    total_hours_registered += visit.sum
 
-print("Hours registered at work {0:.2f}\n".format(sum))
+print("Hours registered at work {0:.2f}\n".format(total_hours_registered))
 print("Note this does not include pauses. Only time you get paid for.")
 
 # Calculate pause time for a given day
@@ -163,11 +163,35 @@ for visit in visits_registered:
 
 print("You have had {:.2f} hours of pause.".format(total_pause))
 print("Shifts including unpaid pauses total to {:.2f} hours."
-      .format(sum+total_pause))
+      .format(total_hours_registered+total_pause))
 
 print()
 print("Amount of visits to Burger King: {:>13}".format(len(visits_timeline)))
 print("Amount of registered shifts at Burger King: {}".format(
     len(visits_registered)))
+
+print()
+print("Finding dates that does not match")
+
+total_difference = 0
+for visit in visits_timeline:
+    # find same date in registered shift
+    registered_shift = [x for x in visits_registered if x.date == visit.date]
+    if not registered_shift or not registered_shift[0]:
+        continue
+    if len(registered_shift) > 1:
+        print("Error: too many shifts in one day {}"
+              .format(str(registered_shift)))
+    registered_shift = registered_shift[0]
+    difference = abs(visit.total_duration() - registered_shift.total_sum())
+    if difference > 0.5:
+        total_difference += difference
+        print("Day {} does not add up. Difference is {:.2f} hours"
+              .format(str(visit.date), difference))
+        print("Timeline says {}".format(visit.to_string()))
+        print("Quinyx says {}".format(registered_shift.to_string()))
+        print()
+
+print("Total difference is {:.2f} hours".format(total_difference))
 
 print("Exiting...")
