@@ -4,8 +4,4 @@ Google Maps har en smart funktion, der hedder "Tidslinje" - dengør det muligt a
 
 Jeg har webscraped data fra Quinyx, som er de vagter jeg får penge for. Programmet tjekker så, om de timer passer med dem jeg har været oppe ved Burger King.
 
-Rå data fra Quinyx "/home/nikolaj/Hentet/DownloadedFilesForMapsTimelineWork/files-for-timeline"
-
-Rå data fra Google "/home/nikolaj/Hentet/DownloadedFilesForMapsTimelineWork/SemanticLocationHistory"
-
-Umiddelbart er der tillid til dataen.
+![Program eksempel](https://raw.githubusercontent.com/NikolajK-HTX/mapsTimelineWork/master/example.png)
