@@ -29,6 +29,8 @@ class registeredVisit:
         self.part_shifts = []
         self.pause = 0
 
+    # time from start to end (pause is counted)
+    # if you want hours clocked in check sum
     def total_sum(self):
         return (self.part_shifts[-1][1] -
                 self.part_shifts[0][0]).total_seconds() / 60 / 60

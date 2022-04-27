@@ -18,6 +18,8 @@ file_paths_registered = []
 
 DAY_NAMES = ["mandag", "tirsdag", "onsdag", "torsdag", "fredag",
              "lørdag", "søndag"]
+MONTH_NAMES = ["januar", "februar", "marts", "april", "maj", "juni", "juli",
+               "august", "september", "oktober", "november", "december"]
 
 workplace_name = "Burger King"
 
@@ -191,10 +193,38 @@ for visit in visits_timeline:
         total_difference += difference
         print("Day {} does not add up. Difference is {:.2f} hours"
               .format(str(visit.date), difference))
-        print("Timeline says {:>21}".format(visit.to_string()))
+        print("Timeline says {:>24}".format(visit.to_string()))
         print("Quinyx says {:>26}".format(registered_shift.to_string()))
         print()
 
 print("Total difference is {:.2f} hours".format(total_difference))
+
+print("Trying to calculate if hours reported by Quinyx "
+      "match those on the pay check")
+
+month_hours = {}
+current_month_name = ""
+for visit in visits_registered:
+    date = visit.date.day
+    month_index = visit.date.month-1
+    month_name = MONTH_NAMES[month_index]
+
+    if date <= 15 and current_month_name == "":
+        current_month_name = MONTH_NAMES[month_index]
+    elif date > 15 and current_month_name == "":
+        current_month_name = MONTH_NAMES[(month_index+1) % 12]
+
+    if date > 15 and (month_name != current_month_name or
+                      month_name != MONTH_NAMES[month_index-1]):
+        current_month_name = MONTH_NAMES[(month_index+1) % 12]
+
+    if month_hours.get(current_month_name) is None:
+        month_hours[current_month_name] = 0
+    month_hours[current_month_name] += visit.sum
+
+for key, value in month_hours.items():
+    print("Month, {:<8}, reports {:>6.2f} hours.".format(key, value))
+
+print()
 
 print("Exiting...")
