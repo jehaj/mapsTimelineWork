@@ -227,4 +227,18 @@ for key, value in month_hours.items():
 
 print()
 
+for x in [x for x in visits_registered if x.pause > 0.5833]:
+    pause_text = ""
+    for i in range(1, len(x.part_shifts)):
+        prev_part_shift = x.part_shifts[i-1]
+        part_shift = x.part_shifts[i]
+
+        pause_text += "{} to {}".format(prev_part_shift[1], part_shift[0])
+        if i < len(x.part_shifts)-1:
+            pause_text += " and "
+
+    print("Quinyx reports {}".format(pause_text))
+
+print()
+
 print("Exiting...")
