@@ -227,6 +227,8 @@ for key, value in month_hours.items():
 
 print()
 
+print("Following days are pauses exceeding normal length:")
+
 for x in [x for x in visits_registered if x.pause > 0.5833]:
     pause_text = ""
     for i in range(1, len(x.part_shifts)):
