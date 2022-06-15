@@ -16,21 +16,37 @@ DIRECTORY_TIMELINE = ("/home/nikolaj/Hentet/"
                       "SemanticLocationHistory")
 file_paths_registered = []
 
-DAY_NAMES = ["mandag", "tirsdag", "onsdag", "torsdag", "fredag",
-             "lørdag", "søndag"]
-MONTH_NAMES = ["januar", "februar", "marts", "april", "maj", "juni", "juli",
-               "august", "september", "oktober", "november", "december"]
+DAY_NAMES_DA = ["mandag", "tirsdag", "onsdag", "torsdag", "fredag",
+                "lørdag", "søndag"]
+DAY_NAMES_EN = ["monday", "tuesday", "wednesday", "thursday", "friday",
+                "saturday", "sunday"]
+DAY_NAMES = DAY_NAMES_DA
+
+MONTH_NAMES_DA = ["januar", "februar", "marts", "april", "maj", "juni", "juli",
+                  "august", "september", "oktober", "november", "december"]
+MONTH_NAMES_EN = ["january", "february", "march", "april", "may", "june",
+                  "july", "august", "september", "oktober", "november",
+                  "december"]
+MONTH_NAMES = MONTH_NAMES_DA
 
 workplace_name = "Burger King"
 
-is_pause_paid = False
+# is_pause_paid = False
 
 # Minimum length of a visit to be counted
 minimum_hours = 1
 
 if (not os.path.exists(DIRECTORY_TIMELINE) or
         not os.path.exists(DIRECTORY_REGISTERED)):
+    print("Cannot find folders at:")
+    print("\t{}".format(DIRECTORY_TIMELINE))
+    print("\t{}".format(DIRECTORY_REGISTERED))
     sys.exit()
+
+days = {}
+if (os.path.exists("override_dates.json")):
+    with open("override_dates.json", 'r') as file:
+        days = json.load(file)
 
 print("Listing files holding registered data")
 
@@ -72,8 +88,18 @@ for visit in visits_timeline:
     total_hours_registered += visit.total_duration()
 
 # Statistic analysis on shift length / average time spent at work
-# visits_duration = [x.duration() for x in visits_timeline]
-# visits_duration.sort()
+visits_duration = [x.total_duration() for x in visits_timeline]
+visits_duration.sort()
+
+print("Average shift is {:.2f} hours.".format(
+    sum(visits_duration)/len(visits_duration)))
+print()
+
+# print visits_timeline to text file
+with open("vagter.txt", "w") as file:
+    for visit in visits_timeline:
+        write_string = visit.to_string()
+        file.write("{}\n".format(write_string))
 
 print("Hours spent at work {0:.2f}.".format(total_hours_registered))
 print("Note that this includes pauses.")
