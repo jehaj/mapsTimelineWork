@@ -1,4 +1,5 @@
 import json
+import locale
 from pathlib import Path
 import os
 import sys
@@ -15,6 +16,10 @@ DIRECTORY_TIMELINE = ("/home/nikolaj/Hentet/"
                       "DownloadedFilesForMapsTimelineWork/"
                       "SemanticLocationHistory")
 file_paths_registered = []
+
+OVERRIDE_FILE_PATH = "override_dates.json"
+
+LOCALE = "da"
 
 DAY_NAMES_DA = ["mandag", "tirsdag", "onsdag", "torsdag", "fredag",
                 "lørdag", "søndag"]
@@ -57,6 +62,12 @@ for folder in os.listdir(DIRECTORY_TIMELINE):
             continue
         file_path = Path(folder_path, file)
         file_paths_timeline.append(file_path)
+
+# locale.setlocale(locale.LC_ALL, 'en_GB.utf8')
+print("Sorting using {} locale.".format(locale.getlocale()))
+file_paths_timeline.sort(
+    key=lambda x: datetime.datetime.strptime(x.parts[-1].split('.')[0], "%Y_%B")
+)
 
 visits_timeline = []
 
@@ -253,7 +264,34 @@ for key, value in month_hours.items():
 
 print()
 
-print("Following days are pauses exceeding normal length:")
+print("Same as above, but hours are from timeline:")
+month_hours = {}
+current_month_name = ""
+for visit in visits_timeline:
+    date = visit.date.day
+    month_index = visit.date.month-1
+    month_name = MONTH_NAMES[month_index]
+
+    if date <= 15 and current_month_name == "":
+        current_month_name = MONTH_NAMES[month_index]
+    elif date > 15 and current_month_name == "":
+        current_month_name = MONTH_NAMES[(month_index+1) % 12]
+
+    if date > 15 and (month_name != current_month_name or
+                      month_name != MONTH_NAMES[month_index-1]):
+        current_month_name = MONTH_NAMES[(month_index+1) % 12]
+
+    if month_hours.get(current_month_name) is None:
+        month_hours[current_month_name] = 0
+    month_hours[current_month_name] += visit.total_duration() - \
+        visit.pause_length()
+
+for key, value in month_hours.items():
+    print("Month, {:<8}, reports {:>6.2f} hours.".format(key, value))
+print()
+
+print("Following days pauses are exceeding normal length "
+      "(30 minutes ~ 5 minutes leeway):")
 
 for x in [x for x in visits_registered if x.pause > 0.5833]:
     pause_text = ""

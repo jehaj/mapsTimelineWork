@@ -1,6 +1,21 @@
 from dateutil.parser import parse
 
 
+MONTH_NAMES_DA = ["januar", "februar", "marts", "april", "maj", "juni", "juli",
+                  "august", "september", "oktober", "november", "december"]
+MONTH_NAMES_EN = ["january", "february", "march", "april", "may", "june",
+                  "july", "august", "september", "oktober", "november",
+                  "december"]
+MONTH_NAMES = MONTH_NAMES_DA
+
+
+def getMonthIndex(month):
+    for i in range(len(MONTH_NAMES)):
+        if month == MONTH_NAMES[i]:
+            return i
+    return -1
+
+
 class nVisit:
     def __init__(self, start, end):
         self.start = parse(start)
@@ -11,6 +26,11 @@ class nVisit:
         time_between = self.end - self.start
         hours = time_between.total_seconds() / 60 / 60
         return(hours)
+
+    def pause_length(self):
+        if self.total_duration() > 4.33:
+            return 0.5
+        return 0
 
     def to_string(self):
         return "{} {}->{}".format(self.date.strftime("%d-%m-%Y"),
