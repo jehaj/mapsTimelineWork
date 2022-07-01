@@ -7,14 +7,103 @@ import nwork
 from lxml import etree
 import datetime
 
-DIRECTORY_REGISTERED = ("/home/nikolaj/Hentet/"
+
+def get_visits_html():
+    visits_registered = []
+    for file_path in file_paths_registered:
+        with open(file_path, 'r') as file:
+            parser = etree.HTMLParser()
+            tree = etree.parse(file, parser)
+
+            trial_amount = len(tree.xpath(
+                "/html/body/div/div/div/div/div[2]/div[2]/div/div[2]/div[2]/"
+                "div/div/div"))
+
+            visit = None
+
+            for i in range(2, trial_amount+1):
+                text = tree.xpath(
+                    "/html/body/div/div/div/div/div[2]/div[2]/div/div[2]"
+                    "/div[2]/div/div/div[{}]/div/div[1]".format(i))
+                text = text[0].text
+
+                if text.lower() == "uge":
+                    continue
+
+                text_list = text.split(", ")
+                if text_list[0].lower() in DAY_NAMES:
+                    if visit is not None:
+                        visits_registered.append(visit)
+                    day, month, year = map(int, text_list[1].split('.'))
+                    visit = nwork.registeredVisit()
+                    visit.date = datetime.date(year, month, day)
+                    continue
+
+                if visit is not None:
+                    start_hour, start_minute = map(int,
+                                                   text.split(" - ")[0]
+                                                       .split(':'))
+                    end_hour, end_minute = map(int,
+                                               text.split(" - ")[1]
+                                                   .split(':'))
+
+                    start_time = datetime.time(start_hour, start_minute)
+                    end_time = datetime.time(end_hour, end_minute)
+
+                    start_datetime = datetime.datetime.combine(visit.date,
+                                                               start_time)
+                    end_datetime = datetime.datetime.combine(visit.date,
+                                                             end_time)
+
+                    visit.part_shifts.append([start_datetime, end_datetime])
+                    duration = end_datetime - start_datetime
+                    visit.sum += duration.total_seconds() / 60 / 60
+
+            if visit is not None:
+                visits_registered.append(visit)
+
+    return visits_registered
+
+
+def get_visits_json():
+    visits_registered = []
+    for file_path in file_paths_registered:
+        with open(file_path, 'r') as file:
+            file_json = json.load(file)
+            punches = file_json["punches"]
+            prev_date = None
+            visit = None
+            for i in range(len(punches)):
+                punch = punches[i]
+                punch_start = datetime.datetime.strptime(punch["punchStart"],
+                                                         "%Y-%m-%d %H:%M:%S")
+                punch_end = datetime.datetime.strptime(punch["punchEnd"],
+                                                       "%Y-%m-%d %H:%M:%S")
+
+                if prev_date != punch_start.date():
+                    prev_date = punch_start.date()
+
+                    visit = nwork.registeredVisit()
+                    visit.date = punch_start.date()
+                    visit.part_shifts.append([punch_start, punch_end])
+
+                    visits_registered.append(visit)
+                else:
+                    visit.part_shifts.append([punch_start, punch_end])
+                duration = punch_end - punch_start
+                visit.sum += duration.total_seconds() / 60 / 60
+
+    return visits_registered
+
+
+DIRECTORY_REGISTERED = ("/home/nikolaj/Downloads/"
                         "DownloadedFilesForMapsTimelineWork/"
-                        "files-for-timeline")
+                        "QuinyxFærdigJSON")
 file_paths_timeline = []
 
-DIRECTORY_TIMELINE = ("/home/nikolaj/Hentet/"
+DIRECTORY_TIMELINE = ("/home/nikolaj/Downloads/"
                       "DownloadedFilesForMapsTimelineWork/"
-                      "SemanticLocationHistory")
+                      "FærdigMapsTimeline")
 file_paths_registered = []
 
 OVERRIDE_FILE_PATH = "override_dates.json"
@@ -66,12 +155,14 @@ for folder in os.listdir(DIRECTORY_TIMELINE):
 # locale.setlocale(locale.LC_ALL, 'en_GB.utf8')
 print("Sorting using {} locale.".format(locale.getlocale()))
 file_paths_timeline.sort(
-    key=lambda x: datetime.datetime.strptime(x.parts[-1].split('.')[0], "%Y_%B")
+    key=lambda x: datetime.datetime.strptime(
+        x.parts[-1].split('.')[0], "%Y_%B"
+    )
 )
 
 visits_timeline = []
 
-print("Try to get information from JSON files.\n"
+print("Try to get information from (Google Maps Timeline) JSON files.\n"
       "...")
 for file_path in file_paths_timeline:
     with open(file_path, 'r') as file:
@@ -121,65 +212,17 @@ print("Finding files holding registered data...\n")
 for file in os.listdir(DIRECTORY_REGISTERED):
     file_path = Path(DIRECTORY_REGISTERED, file)
 
-    if not file.endswith((".html")):
-        continue
-
-    file_paths_registered.append(file_path)
+    if file.endswith((".json")):
+        file_paths_registered.append(file_path)
 
 file_paths_registered.sort()
 
+# [print(str(x)) for x in file_paths_registered]
+# print()
+
 print("Getting registered work attests from Quinyx...\n")
-visits_registered = []
-
-for file_path in file_paths_registered:
-    with open(file_path, 'r') as file:
-        parser = etree.HTMLParser()
-        tree = etree.parse(file, parser)
-
-        trial_amount = len(tree.xpath(
-            "/html/body/div/div/div/div/div[2]/div[2]/div/div[2]/div[2]/"
-            "div/div/div"))
-
-        visit = None
-
-        for i in range(2, trial_amount+1):
-            text = tree.xpath(
-                "/html/body/div/div/div/div/div[2]/div[2]/div/div[2]/div[2]/"
-                "div/div/div[{}]/div/div[1]".format(i))
-            text = text[0].text
-
-            if text.lower() == "uge":
-                continue
-
-            text_list = text.split(", ")
-            if text_list[0].lower() in DAY_NAMES:
-                if visit is not None:
-                    visits_registered.append(visit)
-                day, month, year = map(int, text_list[1].split('.'))
-                visit = nwork.registeredVisit()
-                visit.date = datetime.date(year, month, day)
-                continue
-
-            if visit is not None:
-                start_hour, start_minute = map(int,
-                                               text.split(" - ")[0].split(':'))
-                end_hour, end_minute = map(int,
-                                           text.split(" - ")[1].split(':'))
-
-                start_time = datetime.time(start_hour, start_minute)
-                end_time = datetime.time(end_hour, end_minute)
-
-                start_datetime = datetime.datetime.combine(visit.date,
-                                                           start_time)
-                end_datetime = datetime.datetime.combine(visit.date,
-                                                         end_time)
-
-                visit.part_shifts.append([start_datetime, end_datetime])
-                duration = end_datetime - start_datetime
-                visit.sum += duration.total_seconds() / 60 / 60
-
-        if visit is not None:
-            visits_registered.append(visit)
+# visits_registered = get_visits_html()
+visits_registered = get_visits_json()
 
 total_hours_registered = 0
 
@@ -214,6 +257,19 @@ print("Amount of registered shifts at {}: {}".format(
 
 print()
 print("Finding dates that does not match:")
+
+for i in range(0, len(visits_registered)):
+    quinyxVisit = visits_registered[i]
+    quinyxDate = quinyxVisit.date
+    myList = []
+    for n in range(0, len(visits_registered)):
+        visit = visits_registered[n]
+        date = visit.date
+        if quinyxDate == date:
+            myList.append([date, i, n])
+    if len(myList) > 1:
+        print("help")
+        print(myList)
 
 total_difference = 0
 for visit in visits_timeline:
