@@ -4,4 +4,4 @@ Google Maps har en smart funktion, der hedder "Tidslinje" - dengør det muligt a
 
 Jeg har webscraped data fra Quinyx, som er de vagter jeg får penge for. Programmet tjekker så, om de timer passer med dem jeg har været på arbejde.
 
-![Program eksempel](https://raw.githubusercontent.com/NikolajK-HTX/mapsTimelineWork/master/example.png)
+![Program eksempel](https://raw.githubusercontent.com/jehaj/mapsTimelineWork/master/example.png)
